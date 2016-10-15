@@ -8,7 +8,7 @@ module.exports = {
       client: {
         dev: {
           presets: ['es2017', 'es2015', 'react', 'stage-0'],
-          plugins: ['transform-decorators-legacy', 'react-hot-loader/babel']
+          plugins: ['transform-decorators-legacy'],
         },
         prod: {
           presets: ['es2017', 'es2015', 'react', 'stage-0'],
@@ -46,8 +46,8 @@ module.exports = {
       out: 'build'
     },
     css: {
-      entry: './assets/sass/main.sass',
-      src: './assets/sass/**/**/*.sass',
+      entry: './assets/scss/main.scss',
+      src: './assets/scss/**/**/*.scss',
       out: 'css',
     },
     staticAssets: 'build/static/'

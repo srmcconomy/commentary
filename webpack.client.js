@@ -40,7 +40,7 @@ module.exports = {
 
   module: {
     loaders: [
-      { test: /\.jsx?$/, loaders: ['babel-loader'], include: [path.resolve(__dirname, 'src')] },
+      { test: /\.jsx?$/, loaders: ['react-hot', 'babel-loader'], include: [path.resolve(__dirname, 'src')] },
       { test: /\.json$/, loaders: ['json'] },
     ],
   },
