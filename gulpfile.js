@@ -20,6 +20,7 @@ const gutil = require('gulp-util');
 const path = require('path');
 const fs = require('fs');
 const flow = require('gulp-flowtype');
+const sasslint = require('gulp-sass-lint')
 
 const webpackDevConfig = require('./webpack.dev.client');
 const webpackDevCompiler = webpack(webpackDevConfig);
@@ -32,6 +33,7 @@ let isRunningDevServer = false;
 
 gulp.task('build:css', () =>
   gulp.src(config.files.css.entry)
+    .pipe(cache('build:css'))
     .pipe(plumber())
     .pipe(sourcemaps.init())
     .pipe(sass(config.build.sass).on('error', sass.logError))
@@ -42,14 +44,30 @@ gulp.task('build:css', () =>
     .pipe(reload({ stream: true }))
 );
 
-gulp.task('build:lint', () =>
+gulp.task('build:lint:css', () =>
+  gulp.src(config.files.css.src)
+    .pipe(cache('build:lint:css'))
+    .pipe(plumber())
+    .pipe(sasslint())
+    .pipe(sasslint.format())
+);
+
+gulp.task('build:lint:css:prod', () =>
+  gulp.src(config.files.css.src)
+    .pipe(plumber())
+    .pipe(sasslint())
+    .pipe(sasslint.format())
+    .pipe(sasslint.failOnError())
+);
+
+gulp.task('build:lint:js', () =>
   gulp.src(config.files.client.src)
-    .pipe(cache('build:lint'))
+    .pipe(cache('build:lint:js'))
     .pipe(eslint())
     .pipe(eslint.format())
 );
 
-gulp.task('build:lint:prod', () =>
+gulp.task('build:lint:js:prod', () =>
   gulp.src(config.files.client.src)
     .pipe(eslint())
     .pipe(eslint.format())
@@ -60,6 +78,11 @@ gulp.task('build:flow', () =>
   gulp.src(config.files.client.src)
     .pipe(cache('build:flow'))
     .pipe(flow())
+);
+
+gulp.task('build:flow:prod', () =>
+  gulp.src(config.files.client.src)
+    .pipe(flow({ abort: true }))
 );
 
 /**
@@ -149,7 +172,10 @@ gulp.task('clean', callback => {
  * Task to compile our files for production.
  */
 gulp.task('compile', callback => {
-  runSequence('clean', 'build:lint:prod', [
+  runSequence('clean', [
+    'build:lint:js:prod',
+    'build:lint:css:prod',
+  ], [
     'build:client:prod',
     'build:server:prod',
   ], callback);
@@ -157,8 +183,11 @@ gulp.task('compile', callback => {
 
 gulp.task('watch', ['clean'], callback => {
   runSequence(
-    'build:lint',
-    'build:flow', [
+    [
+      'build:lint:js',
+      'build:flow',
+      'build:lint:css',
+    ], [
       'build:css',
       'build:client',
       'build:server',
@@ -166,7 +195,8 @@ gulp.task('watch', ['clean'], callback => {
       // Watch files
       gulp.watch(config.files.client.src, ['build:client']);
       gulp.watch(config.files.server.src, ['build:server']);
-      gulp.watch(config.files.client.src, ['build:lint']);
+      gulp.watch(config.files.client.src, ['build:lint:js']);
+      gulp.watch(config.files.css.src, ['build:lint:css']);
       gulp.watch(config.files.client.src, ['build:flow']);
       gulp.watch(config.files.css.src, ['build:css']);
 

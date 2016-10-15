@@ -1,3 +1,5 @@
+// @flow
+
 module.exports = {
   ports: {
     webpack: 8000,

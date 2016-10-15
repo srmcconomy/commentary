@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+// @flow
 
-export default class App extends Component {
-  render() {
-    return <div>HI</div>;
-  }
+import React from 'react';
+
+export default function () {
+  return <div>HI</div>;
 }

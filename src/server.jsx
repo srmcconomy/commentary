@@ -11,7 +11,9 @@ import App from './components/App';
 global.navigator = { navigator: 'all' };
 
 const app = express();
-app.use('/assets/', express.static(path.join(__dirname, '../build/static')));
+app.use('/assets/', express.static(
+  path.join(__dirname, '../build/static')
+));
 
 let jsFile;
 if (process.env.NODE_ENV === 'production') {

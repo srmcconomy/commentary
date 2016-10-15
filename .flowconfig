@@ -1,4 +1,6 @@
 [ignore]
+.*/test/.*
+.*/gulp-sass-lint/.*
 
 [include]
 
