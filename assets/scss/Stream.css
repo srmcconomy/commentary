@@ -1,0 +1,67 @@
+iframe {
+  position: relative;
+  border: none;
+  float: right;
+}
+
+.Stream {
+  position: absolute;
+  overflow: hidden;
+  z-index: 10;
+  box-shadow: 0 0 30px 10px rgba(0,0,0,0.6);
+}
+
+.Stream.o {
+  z-index: 30;
+}
+
+.Stream.o.fading {
+  z-index: 40;
+}
+
+.Stream:not(.loading):not(.appearing) {
+  transition: 0.5s ease-in-out;
+}
+
+.Stream.appearing {
+  opacity: 0;
+}
+
+.Stream.fading {
+  z-index: 20;
+  opacity: 0;
+}
+
+.Stream .name {
+  position: absolute;
+  top: 4%;
+  right: 4%;
+  font-size: 3.5vh;
+  color: white;
+  z-index: 1;
+  font-weight: 600;
+  -webkit-text-stroke: 0.15vh black;
+}
+
+.Stream .header {
+  position: absolute;
+  bottom: 4%;
+  left: 4%;
+  font-size: 3.5vh;
+  color: white;
+  z-index: 1;
+  font-weight: 600;
+  -webkit-text-stroke: 0.15vh black;
+}
+
+.Stream.loading {
+  height: 45%;
+  width: 45%;
+  left: -48.333%;
+  bottom: 3.333%;
+  background: magenta;
+}
+
+.Stream.loading, .Stream.appearing {
+  z-index: 5;
+}

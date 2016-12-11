@@ -1,0 +1,82 @@
+// @flow
+
+import type { TransformRecord, StreamRecord, Aspect } from './Records';
+import type { List } from 'immutable';
+
+export type DispatchToken = string;
+
+type TransformPayload = {
+  type: 'set-transform',
+  name: string,
+  transform: TransformRecord,
+}
+
+type LoadPayload = {
+  type: 'set-stream',
+  stream: StreamRecord,
+  name: string,
+}
+
+type SelectPayload = {
+  type: 'select-stream',
+  position: string,
+}
+
+type LoadAndSelectPayload = {
+  type: 'set-and-select-stream',
+  stream: StreamRecord,
+  name: string,
+}
+
+type MovePayload = {
+  type: 'move-stream',
+  name: string,
+  position: string,
+}
+
+type RemovePayload = {
+  type: 'remove-stream',
+  name: string,
+}
+
+type OverlayPayload = {
+  type: 'set-overlay',
+  value: boolean,
+}
+
+type LoadRacePayload = {
+  type: 'load-race',
+  id: string,
+}
+
+type SetRacePayload = {
+  type: 'set-race',
+  entrants: List<string>,
+}
+
+type AspectPayload = {
+  type: 'set-aspect',
+  aspect: Aspect,
+}
+
+export type Payload = TransformPayload |
+  LoadPayload |
+  SelectPayload |
+  MovePayload |
+  RemovePayload |
+  LoadAndSelectPayload |
+  OverlayPayload |
+  LoadRacePayload |
+  SetRacePayload |
+  AspectPayload;
+
+declare class ExceptDispatcher<TPayload> {
+  register(callback: (payload: TPayload) => void): DispatchToken;
+  unregister(id: DispatchToken): void;
+  waitFor(ids: Array<DispatchToken>): void;
+  dispatch(payload: TPayload): void;
+  broadcast(payload: TPayload, except: DispatchToken): void;
+  isDispatching(): boolean;
+}
+
+declare export default ExceptDispatcher<Payload>;

@@ -1,0 +1,36 @@
+.StreamArea {
+  background: #202020;
+  position: relative;
+}
+
+.StreamArea .background {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 1.0;
+  transition: opacity 20s ease-in-out;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+
+  &.current {
+    z-index: 1;
+  }
+
+  &.prev {
+    z-index: 2;
+    opacity: 0;
+  }
+
+  &.next {
+    z-index: 0;
+  }
+}
+
+.a4-3 .StreamArea {
+  width: 133.333vh;
+}
+
+.a16-9 .StreamArea {
+  width: 177.777vh;
+}

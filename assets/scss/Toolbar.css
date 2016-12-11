@@ -1,0 +1,13 @@
+.Toolbar {
+  flex: 1;
+  background: #303030;
+}
+
+.Toolbar>div {
+  margin: 5px 0;
+}
+
+.Toolbar>.title {
+  color: white;
+  text-align: center;
+}

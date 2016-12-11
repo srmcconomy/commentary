@@ -1,0 +1,8 @@
+.StreamTool button.hidden {
+  opacity: 0.5;
+}
+
+.StreamTool .title {
+  display: inline;
+  margin-right: 10px;
+}

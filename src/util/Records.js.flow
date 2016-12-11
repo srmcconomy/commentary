@@ -1,0 +1,137 @@
+// @flow
+
+import type { Map, List } from 'immutable';
+
+type StreamType = 'stream' | 'clip';
+
+export type TransformRecordProp = 'top' | 'left' | 'scale' | 'stretch';
+
+declare export class TransformRecord {
+  top: number;
+  left: number;
+  scale: number;
+  stretch: number;
+  constructor(
+    defaultValues?: {
+      top?: number,
+      left?: number,
+      scale?: number,
+      stretch?: number,
+    }
+  ): this;
+  forEach(func: (value: number, key: TransformRecordProp) => void): void;
+  set(key: TransformRecordProp): TransformRecord;
+}
+
+declare export class StreamRecord {
+  name: string;
+  type: StreamType;
+  position: string;
+  clip?: string;
+  constructor(
+    defaultValues?: {
+      name: string,
+      position: string,
+      type: 'clip',
+      clip: string,
+    } | {
+      name: string,
+      type: 'stream',
+      position: string,
+    }
+  ): this;
+}
+
+export type Aspect = 'a4-3' | 'a16-9';
+
+declare export class DataRecord {
+  streams: List<?StreamRecord>;
+  transforms: Map<string, TransformRecord>;
+  selectedStream: ?string;
+  race: List<string>;
+  overlayOn: boolean;
+  aspect: Aspect;
+
+  constructor(
+    defaultValues?: {
+      streams?: List<?StreamRecord>,
+      transforms?: Map<string, TransformRecord>,
+      selectedStream?: ?string,
+      race?: List<string>,
+      overlayOn?: boolean,
+      aspect?: Aspect,
+    }
+  ): this;
+
+  set(property: 'streams', value: List<?StreamRecord>): DataRecord;
+  set(location: 'transforms', value: Map<string, TransformRecord>): DataRecord;
+  set(location: 'selectedStream', value: ?string): DataRecord;
+  set(property: 'overlayOn', value: boolean): DataRecord;
+  set(property: 'race', value: List<string>): DataRecord;
+  set(property: 'aspect', value: Aspect): DataRecord;
+
+  setIn(location: ['streams'], value: List<?StreamRecord>): DataRecord;
+  setIn(location: ['streams', number], value: ?StreamRecord): DataRecord;
+  setIn(location: ['streams', number, any], value: any): DataRecord;
+  setIn(location: ['transforms'], value: Map<string, TransformRecord>): DataRecord;
+  setIn(location: ['transforms', string], value: TransformRecord): DataRecord;
+  setIn(location: ['transforms', string, TransformRecordProp], value: number): DataRecord;
+  setIn(location: ['selectedStream'], value: ?string): DataRecord;
+  setIn(location: ['overlayOn'], value: boolean): DataRecord;
+  setIn(location: ['race'], value: List<string>): DataRecord;
+  setIn(location: ['race', number], value: string): DataRecord;
+  setIn(location: ['aspect'], value: Aspect): DataRecord;
+
+
+  deleteIn(location: Array<string>): DataRecord;
+
+  toJS(): {
+    streams: Array<?{
+      name: string,
+      position: string,
+      type: 'clip',
+      clip: string,
+    } | {
+      name: string,
+      type: 'stream',
+      position: string,
+    }>,
+    transforms: {
+      [key: string]: {
+        top: number,
+        left: number,
+        scale: number,
+        stretch: number,
+      }
+    },
+    selectedStream: string,
+    race: Array<string>,
+    overlayOn: boolean,
+    aspect: Aspect,
+  };
+
+  static fromJS(object: {
+    streams: Array<?{
+      name: string,
+      position: string,
+      type: 'clip',
+      clip: string,
+    } | {
+      name: string,
+      type: 'stream',
+      position: string,
+    }>,
+    transforms: {
+      [key: string]: {
+        top: number,
+        left: number,
+        scale: number,
+        stretch: number,
+      }
+    },
+    selectedStream: string,
+    race: Array<string>,
+    overlayOn: boolean,
+    aspect: Aspect,
+  }): DataRecord;
+}

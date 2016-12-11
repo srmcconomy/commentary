@@ -1,0 +1,25 @@
+.AspectTool .buttons {
+  display: flex;
+}
+
+.AspectTool .a4-3 {
+  height: 30px;
+  width: 40px;
+}
+
+.AspectTool .a16-9 {
+  height: 30px;
+  width: 53.333px;
+}
+
+.AspectTool button {
+  margin: 5px;
+}
+
+.a4-3 .AspectTool .a4-3 {
+  background: green;
+}
+
+.a16-9 .AspectTool .a16-9 {
+  background: green;
+}

@@ -1,0 +1,13 @@
+.TransformTool .inputs {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.TransformTool .inputs>div {
+  margin-right: 20px;
+}
+
+.TransformTool input {
+  width: 30px;
+  margin-left: 10px;
+}
