@@ -9,36 +9,34 @@ type State = {
 };
 
 export default class SRLTool extends Component {
-
   state: State;
 
   constructor() {
     super();
     this.state = {
       value: '',
-    }
+    };
   }
 
-  _onChange = (event: Event) => {
+  onChange = (event: Event) => {
     if (event.target instanceof HTMLInputElement) {
       this.setState({ value: event.target.value });
     }
   }
 
-  _onKeyPress = (event: KeyboardEvent) => {
+  onKeyPress = (event: KeyboardEvent) => {
     if (event.key === 'Enter') {
-      this._onClick();
+      this.onClick();
     }
   }
 
-  _onClick = () => {
+  onClick = () => {
     this.setState({ value: '' });
     dispatcher.dispatch({
       type: 'load-race',
       id: this.state.value,
     });
   }
-
 
   render() {
     return (
@@ -47,12 +45,12 @@ export default class SRLTool extends Component {
           Enter SRL race id:
         </div>
         <input
-          onChange={this._onChange}
-          onKeyPress={this._onKeyPress}
+          onChange={this.onChange}
+          onKeyPress={this.onKeyPress}
           value={this.state.value}
           placeholder="ie. t4kf9"
         />
-        <button onClick={this._onClick}>Load buttons</button>
+        <button onClick={this.onClick}>Load buttons</button>
       </div>
     );
   }

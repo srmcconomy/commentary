@@ -18,24 +18,23 @@ export default class Overlay extends Component {
     this.state = { show: data.overlayOn };
   }
 
-  _onStoreChange = () => {
-    const data = store.get();
-    this.setState({ show: data.overlayOn });
-  }
-
   componentDidMount() {
-    store.addChangeListener(this._onStoreChange);
+    store.addChangeListener(this.onStoreChange);
   }
 
   componentWillUnmount() {
-    store.removeChangeListener(this._onStoreChange);
+    store.removeChangeListener(this.onStoreChange);
+  }
+
+  onStoreChange = () => {
+    const data = store.get();
+    this.setState({ show: data.overlayOn });
   }
 
   render() {
     if (this.state.show) {
       return <div className="Overlay" />;
-    } else {
-      return null;
     }
+    return null;
   }
 }

@@ -9,6 +9,7 @@ iframe {
   overflow: hidden;
   z-index: 10;
   box-shadow: 0 0 30px 10px rgba(0,0,0,0.6);
+  transform: perspective(150vh);
 }
 
 .Stream.o {
@@ -19,17 +20,18 @@ iframe {
   z-index: 40;
 }
 
-.Stream:not(.loading):not(.appearing) {
-  transition: 0.5s ease-in-out;
+.Stream.alive {
+  transition: transform 0.5s ease-out;
 }
 
 .Stream.appearing {
-  opacity: 0;
+  transform: rotateY(-90deg);
 }
 
 .Stream.fading {
+  transition: transform 0.5s ease-in;
   z-index: 20;
-  opacity: 0;
+  transform: rotateY(90deg);
 }
 
 .Stream .name {
@@ -40,7 +42,10 @@ iframe {
   color: white;
   z-index: 1;
   font-weight: 600;
-  -webkit-text-stroke: 0.15vh black;
+}
+
+.Stream .name.outline {
+  -webkit-text-stroke: 0.30vh black;
 }
 
 .Stream .header {

@@ -123,6 +123,7 @@ export default class Stream extends Component {
           className={`Stream ${position} ${lifeState}`}
           onTransitionEnd={this._onTransitionEnd}>
           {header}
+          <div className="name outline">{name}</div>
           <div className="name">{name}</div>
           <iframe
             src={url}

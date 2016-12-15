@@ -2,7 +2,6 @@
 
 import React, { Component } from 'react';
 
-import Overlay from './Overlay';
 import store from '../util/store';
 import StreamArea from './StreamArea';
 import Toolbar from './Toolbar';
@@ -20,22 +19,22 @@ export default class App extends Component {
     this.state = { aspect: data.aspect };
   }
 
-  _onStoreChange = () => {
+  componentDidMount() {
+    store.addChangeListener(this.onStoreChange);
+  }
+
+  componentWillUnmount() {
+    store.removeChangeListener(this.onStoreChange);
+  }
+
+  onStoreChange = () => {
     const data = store.get();
     this.setState({ aspect: data.aspect });
   }
 
-  componentDidMount() {
-    store.addChangeListener(this._onStoreChange);
-  }
-
-  componentWillUnmount() {
-    store.removeChangeListener(this._onStoreChange);
-  }
-
   render() {
     return (
-      <div className={'App ' + this.state.aspect}>
+      <div className={`App ${this.state.aspect}`}>
         <Toolbar />
         <StreamArea />
       </div>

@@ -2,49 +2,49 @@
 
 import { Record, Map, List } from 'immutable';
 
-export const TransformRecord = Record({
+export class TransformRecord extends new Record({
   top: 0,
   left: 0,
   scale: 1,
   stretch: 1,
-});
+}) { }
 
-export const StreamRecord = Record({
+export class StreamRecord extends new Record({
   name: '',
   type: '',
   clip: '',
   position: '',
-});
+}) { }
 
-export class DataRecord extends Record({
-  streams: List().setSize(10).map(() => null),
+export class DataRecord extends new Record({
+  streams: new List().setSize(10).map(() => null),
   transforms: new Map(),
   selectedStream: null,
-  race: List(),
+  race: new List(),
   overlayOn: true,
   aspect: 'a4-3',
 }) {
   static fromJS(object) {
     let data = new DataRecord(object);
-    if (object.hasOwnProperty('streams')) {
-      const streams = object.streams.map(stream => {
+    if (Object.hasOwnProperty.bind(object, 'streams')) {
+      const streams = object.streams.map((stream) => {
         if (stream) {
-          return StreamRecord(stream);
+          return new StreamRecord(stream);
         }
         return null;
       });
-      data = data.set('streams', List(streams));
+      data = data.set('streams', new List(streams));
     }
-    if (object.hasOwnProperty('transforms')) {
+    if (Object.hasOwnProperty.bind(object, 'transforms')) {
       const transforms = object.transforms;
-      let map = Map();
+      let map = new Map();
       for (let name in transforms) {
         map = map.set(name, new TransformRecord(transforms[name]));
       }
       data = data.set('transforms', map);
     }
-    if (object.hasOwnProperty('race')) {
-      const race = List(object.race);
+    if (Object.hasOwnProperty.bind(object, 'race')) {
+      const race = new List(object.race);
       data = data.set('race', race);
     }
     return data;

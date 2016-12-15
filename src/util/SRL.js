@@ -1,6 +1,9 @@
-import dispatcher from './dispatcher';
-import http from 'http';
+// @flow
+
 import { List } from 'immutable';
+import http from 'http';
+
+import dispatcher from './dispatcher';
 
 type SRLType = {
   count: number,
@@ -33,24 +36,24 @@ type SRLType = {
   }>
 }
 
-const token = dispatcher.register(payload => {
+dispatcher.register(payload => {
   if (payload.type !== 'load-race') return;
-  http.get('http://api.speedrunslive.com/races', res => {
+  http.get('http://api.speedrunslive.com/races', (res) => {
     let body = '';
     res.on('data', (chunk: string) => {
       body += chunk;
     });
     res.on('end', () => {
       const srl: SRLType = JSON.parse(body);
-      const race = srl.races.find(race => race.id === payload.id);
+      const race = srl.races.find(r => r.id === payload.id);
       if (race) {
-        let entrants = List();
+        let entrants = new List();
         for (let name in race.entrants) {
           if (race.entrants.hasOwnProperty(name) && race.entrants[name].twitch.length > 0) {
             entrants = entrants.push(race.entrants[name].twitch);
           }
         }
-        entrants = entrants.sort((a, b) => a.toUpperCase() - b.toUpperCase());
+        entrants = entrants.sort((a, b) => (a.toUpperCase() < b.toUpperCase() ? -1 : 1));
         dispatcher.dispatch({
           type: 'set-race',
           entrants,

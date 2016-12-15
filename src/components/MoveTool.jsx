@@ -24,10 +24,9 @@ const buttonAreas = [
   ], [
     'o',
   ],
-]
+];
 
 export default class MoveTool extends Component {
-
   state: State;
 
   constructor() {
@@ -36,9 +35,16 @@ export default class MoveTool extends Component {
     this.state = { selectedStream: data.selectedStream };
   }
 
-  _onClick(position: string) {
-    return () => {
+  componentDidMount() {
+    store.addChangeListener(this.onStoreChange);
+  }
 
+  componentWillUnmount() {
+    store.removeChangeListener(this.onStoreChange);
+  }
+
+  onClick(position: string) {
+    return () => {
       const { selectedStream } = this.state;
       if (selectedStream) {
         const data = store.get();
@@ -59,22 +65,15 @@ export default class MoveTool extends Component {
         dispatcher.dispatch({
           type: 'select-stream',
           position
-        })
+        });
       }
     };
   }
 
-  componentDidMount() {
-    store.addChangeListener(this._onStoreChange);
-  }
 
-  componentWillUnmount() {
-    store.removeChangeListener(this._onStoreChange);
-  }
-
-  _onStoreChange = () => {
+  onStoreChange = () => {
     const data = store.get();
-    this.setState({ selectedStream: data.selectedStream })
+    this.setState({ selectedStream: data.selectedStream });
   }
 
   render() {
@@ -91,7 +90,7 @@ export default class MoveTool extends Component {
     }
 
     const areas = buttonAreas.map((a, i) => {
-      const buttons = a.map(c => {
+      const buttons = a.map((c) => {
         let symbol = null;
         if (this.state.selectedStream) {
           symbol = '\u2794';
@@ -100,7 +99,7 @@ export default class MoveTool extends Component {
           }
         }
         return (
-          <button key={c} className={c} onClick={this._onClick(c)}>
+          <button key={c} className={c} onClick={this.onClick(c)}>
             {symbol}
           </button>
         );
@@ -109,7 +108,7 @@ export default class MoveTool extends Component {
         <div key={i} className="button-area">
           {buttons}
         </div>
-      )
+      );
     });
     return (
       <div className="MoveTool">

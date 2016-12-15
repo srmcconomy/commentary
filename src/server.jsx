@@ -7,7 +7,7 @@ import http from 'http';
 import path from 'path';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
-import socketio from 'socket.io'
+import socketio from 'socket.io';
 
 import './util/SRL';
 import { TransformRecord, DataRecord, StreamRecord } from './util/Records';
@@ -16,8 +16,8 @@ import config from '../config';
 import dispatcher from './util/dispatcher';
 import store from './util/store';
 
-import type { Payload } from './util/dispatcher';
 import type EventEmitter from 'events';
+import type { Payload } from './util/dispatcher';
 
 const app = express();
 const server = http.Server(app);
@@ -29,7 +29,7 @@ app.use('/assets', express.static(
   path.join(__dirname, 'static')
 ));
 
-app.use('/images', express.static(path.join(__dirname, '../images')))
+app.use('/images', express.static(path.join(__dirname, '../images')));
 
 let jsFile;
 if (process.env.NODE_ENV === 'production') {
@@ -53,36 +53,36 @@ app.get('/', (req, res) => {
       <div id="root">${build}</div>
       <script async defer src="${jsFile}"></script>
     </body>
-  </html>`
+  </html>`;
   res.send(html);
 });
 
 app.get('/save', (req, res) => {
   const data = store.get();
-  fs.writeFile('./data.json', JSON.stringify(data.toJS()), function(err) {
-    if(err) {
-        return console.log(err);
+  fs.writeFile('./data.json', JSON.stringify(data.toJS()), (err) => {
+    if (err) {
+      console.log(err);
+      return;
     }
-    res.send("SAVED!");
+    res.send('SAVED!');
   });
 });
 
 app.get('/load', (req, res) => {
-  const data = store.get();
   fs.readFile('./data.json', 'utf8', (err, data) => {
     if (err) throw err;
     store.set(DataRecord.fromJS(JSON.parse(data)));
-    res.send("LOADED!");
+    res.send('LOADED!');
   });
 });
 
-io.on('connection', function(socket: EventEmitter) {
+io.on('connection', (socket: EventEmitter) => {
   socket.emit('set', store.get());
-  const token = dispatcher.register(payload => {
+  const token = dispatcher.register((payload) => {
     socket.emit('dispatch', payload);
   });
   socket.on('dispatch', (payload) => {
-    switch(payload.type) {
+    switch (payload.type) {
       case 'set-transform':
         payload.transform = new TransformRecord(payload.transform);
         break;
@@ -94,6 +94,8 @@ io.on('connection', function(socket: EventEmitter) {
       case 'set-race':
         payload.entrants = List(payload.entrants);
         break;
+
+      default:
     }
     dispatcher.broadcast(payload, token);
   });

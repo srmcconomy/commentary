@@ -13,10 +13,10 @@ type State = {
 }
 
 const steps : {[key: string]: number} = {
-  left: 100/1080,
-  top: 100/1080,
-  scale: 1/400,
-  stretch: 1/400,
+  left: 100 / 1080,
+  top: 100 / 1080,
+  scale: 1 / 400,
+  stretch: 1 / 400,
 };
 
 export default class TransformTool extends Component {
@@ -31,7 +31,15 @@ export default class TransformTool extends Component {
     };
   }
 
-  _onChange(prop: TransformRecordProp) {
+  componentDidMount() {
+    store.addChangeListener(this.onStoreChange);
+  }
+
+  componentWillUnmount() {
+    store.removeChangeListener(this.onStoreChange);
+  }
+
+  onChange(prop: TransformRecordProp) {
     return (event: Event) => {
       const data = store.get();
       if (this.state.name && event.target instanceof HTMLInputElement) {
@@ -45,15 +53,7 @@ export default class TransformTool extends Component {
     };
   }
 
-  componentDidMount() {
-    store.addChangeListener(this._onStoreChange);
-  }
-
-  componentWillUnmount() {
-    store.removeChangeListener(this._onStoreChange);
-  }
-
-  _onStoreChange = () => {
+  onStoreChange = () => {
     const data = store.get();
     const name = data.selectedStream;
     if (name) {
@@ -72,7 +72,7 @@ export default class TransformTool extends Component {
         inputs.push(
           <div key={key}>
             {key}
-            <input type="number" onChange={this._onChange(key)} step={steps[key]} value={value} />
+            <input type="number" onChange={this.onChange(key)} step={steps[key]} value={value} />
           </div>
         );
       });

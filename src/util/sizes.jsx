@@ -1,4 +1,6 @@
-export default sizes = {
+// @flow
+
+export default {
   'a3-4': {
     q: {
       width: 60,

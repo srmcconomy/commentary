@@ -1,45 +1,46 @@
 // @flow
 
 import EventEmitter from 'events';
+
 import { DataRecord, TransformRecord } from './Records';
 import dispatcher from './dispatcher';
 import type { DispatchToken } from './dispatcher';
 
 
 class Store extends EventEmitter {
-  _data: DataRecord;
-  _dispatchToken: DispatchToken;
+  data: DataRecord;
+  dispatchToken: DispatchToken;
 
   constructor() {
     super();
-    this._data = new DataRecord();
+    this.data = new DataRecord();
 
-    this._dispatchToken = dispatcher.register(payload => {
-      const oldData = this._data;
+    this.dispatchToken = dispatcher.register((payload) => {
+      const oldData = this.data;
 
-      switch(payload.type) {
+      switch (payload.type) {
         case 'set-transform':
-          this._data = this._data.setIn(
+          this.data = this.data.setIn(
             ['transforms', payload.name],
             payload.transform
           );
           break;
 
         case 'set-stream': {
-          let toIndex = this._data.streams.findIndex(
+          let toIndex = this.data.streams.findIndex(
             stream => stream && stream.position === 'loading'
           );
           if (toIndex === -1) {
-            toIndex = this._data.streams.findIndex(
+            toIndex = this.data.streams.findIndex(
               stream => stream === null
             );
           }
-          this._data = this._data.setIn(
+          this.data = this.data.setIn(
             ['streams', toIndex],
             payload.stream
           );
-          if (!this._data.transforms.has(payload.stream.name)) {
-            this._data = this._data.setIn(
+          if (!this.data.transforms.has(payload.stream.name)) {
+            this.data = this.data.setIn(
               ['transforms', payload.stream.name],
               new TransformRecord()
             );
@@ -49,62 +50,64 @@ class Store extends EventEmitter {
 
         case 'move-stream': {
           const { name, position } = payload;
-          const fromIndex = this._data.streams.findIndex(
+          const fromIndex = this.data.streams.findIndex(
             value => value && value.name === name
           );
-          let toIndex = this._data.streams.findIndex(
+          const toIndex = this.data.streams.findIndex(
             value => value && value.position === position
           );
           if (toIndex > -1) {
-            this._data = this._data.setIn(
+            this.data = this.data.setIn(
               ['streams', toIndex],
               null
             );
           }
           if (fromIndex > -1) {
-            this._data = this._data.setIn(
+            this.data = this.data.setIn(
               ['streams', fromIndex, 'position'],
               position
             );
           }
-          this._data = this._data.set('selectedStream', null);
+          this.data = this.data.set('selectedStream', null);
           break;
         }
 
-        case 'remove-stream':
+        case 'remove-stream': {
           const { name } = payload;
-          const index = this._data.streams.findIndex(s => s && s.name === name);
+          const index = this.data.streams.findIndex(s => s && s.name === name);
           if (index > -1) {
-            this._data = this._data.setIn(
+            this.data = this.data.setIn(
               ['streams', index],
               null
             );
           }
           break;
+        }
 
-        case 'select-stream':
+        case 'select-stream': {
           const { position } = payload;
-          const stream = this._data.streams.find(s => s && s.position === position);
+          const stream = this.data.streams.find(s => s && s.position === position);
           if (stream) {
-            this._data = this._data.set('selectedStream', stream.name);
+            this.data = this.data.set('selectedStream', stream.name);
           }
           break;
+        }
 
         case 'set-and-select-stream': {
-          let toIndex = this._data.streams.findIndex(
+          let toIndex = this.data.streams.findIndex(
             stream => stream && stream.position === 'loading'
           );
           if (toIndex === -1) {
-            toIndex = this._data.streams.findIndex(
+            toIndex = this.data.streams.findIndex(
               stream => stream === null
             );
           }
-          this._data = this._data.setIn(
+          this.data = this.data.setIn(
             ['streams', toIndex],
             payload.stream
           ).set('selectedStream', payload.name);
-          if (!this._data.transforms.has(payload.stream.name)) {
-            this._data = this._data.setIn(
+          if (!this.data.transforms.has(payload.stream.name)) {
+            this.data = this.data.setIn(
               ['transforms', payload.stream.name],
               new TransformRecord()
             );
@@ -113,20 +116,20 @@ class Store extends EventEmitter {
         }
 
         case 'set-overlay':
-          this._data = this._data.set('overlayOn', payload.value);
+          this.data = this.data.set('overlayOn', payload.value);
           break;
 
         case 'set-race':
-          this._data = this._data.set('race', payload.entrants);
+          this.data = this.data.set('race', payload.entrants);
           break;
 
         case 'set-aspect':
-          this._data = this._data.set('aspect', payload.aspect);
+          this.data = this.data.set('aspect', payload.aspect);
           break;
 
         default: break;
       }
-      if (oldData !== this._data) {
+      if (oldData !== this.data) {
         this.emitChange();
       }
     });
@@ -145,12 +148,12 @@ class Store extends EventEmitter {
   }
 
   get() {
-    return this._data;
+    return this.data;
   }
 
   set = (newData: DataRecord) => {
-    if (newData !== this._data) {
-      this._data = newData;
+    if (newData !== this.data) {
+      this.data = newData;
       this.emitChange();
     }
   }

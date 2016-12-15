@@ -4,9 +4,8 @@ import React, { Component } from 'react';
 
 import { StreamRecord } from '../util/Records';
 import dispatcher from '../util/dispatcher';
-import store from '../util/store';
 
-const clipUrlRegex = /https:\/\/clips\.twitch\.tv\/([^\/]+)\/([^\/]+)/;
+const clipUrlRegex = /https:\/\/clips\.twitch\.tv\/([^/]+)\/([^/]+)/;
 
 type State = {
   url: string,
@@ -21,19 +20,19 @@ export default class ClipTool extends Component {
     this.state = { url: '' };
   }
 
-  _onChange = (event: Event) => {
+  onChange = (event: Event) => {
     if (event.target instanceof HTMLInputElement) {
       this.setState({ url: event.target.value });
     }
   }
 
-  _onKeyPress = (event: KeyboardEvent) => {
+  onKeyPress = (event: KeyboardEvent) => {
     if (event.key === 'Enter') {
-      this._onClick();
+      this.onClick();
     }
   }
 
-  _onClick = () => {
+  onClick = () => {
     const [, name, clip]: [string, string] = clipUrlRegex.exec(this.state.url);
     this.setState({ url: '' });
     dispatcher.dispatch({
@@ -57,11 +56,11 @@ export default class ClipTool extends Component {
         <input
           placeholder="clip URL"
           value={this.state.url}
-          onChange={this._onChange}
-          onKeyPress={this._onKeyPress}
+          onChange={this.onChange}
+          onKeyPress={this.onKeyPress}
         />
-        <button onClick={this._onClick}>GO!</button>
+        <button onClick={this.onClick}>GO!</button>
       </div>
-    )
+    );
   }
 }

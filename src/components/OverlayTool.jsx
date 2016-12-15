@@ -10,7 +10,6 @@ type State = {
 }
 
 export default class OverlayTool extends Component {
-
   state: State;
 
   constructor() {
@@ -20,14 +19,14 @@ export default class OverlayTool extends Component {
   }
 
   componentDidMount() {
-    store.addChangeListener(this._onStoreChange);
+    store.addChangeListener(this.onStoreChange);
   }
 
   componentWillUnmount() {
-    store.removeChangeListener(this._onStoreChange);
+    store.removeChangeListener(this.onStoreChange);
   }
 
-  _onClick = (event: Event) => {
+  onClick = () => {
     const checked = !this.state.checked;
     dispatcher.dispatch({
       type: 'set-overlay',
@@ -35,14 +34,14 @@ export default class OverlayTool extends Component {
     });
   }
 
-  _onStoreChange = () => {
+  onStoreChange = () => {
     const data = store.get();
     this.setState({ checked: data.overlayOn });
   }
 
   render() {
     return (
-      <div className="OverlayTool" onClick={this._onClick}>
+      <div className="OverlayTool" onClick={this.onClick}>
         <div className="title">
           Prevent interaction with streams:
         </div>

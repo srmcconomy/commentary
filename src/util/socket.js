@@ -1,19 +1,19 @@
 // @flow
 
-import io from 'socket.io-client';
-
-import dispatcher from './dispatcher';
-import type EventEmitter from 'events';
-import store from './store';
 import { List } from 'immutable';
+import io from 'socket.io-client';
+import type EventEmitter from 'events';
+
 import { DataRecord, TransformRecord, StreamRecord } from './Records';
+import dispatcher from './dispatcher';
+import store from './store';
 
 const socket: EventEmitter = io();
-const token = dispatcher.register(payload => {
+const token = dispatcher.register((payload) => {
   socket.emit('dispatch', payload);
 });
 socket.on('dispatch', (payload) => {
-  switch(payload.type) {
+  switch (payload.type) {
     case 'set-transform':
       payload.transform = new TransformRecord(payload.transform);
       break;
@@ -23,11 +23,13 @@ socket.on('dispatch', (payload) => {
       break;
 
     case 'set-race':
-      payload.entrants = List(payload.entrants);
+      payload.entrants = new List(payload.entrants);
       break;
+
+    default:
   }
   dispatcher.broadcast(payload, token);
 });
-socket.on('set', data => {
+socket.on('set', (data) => {
   store.set(DataRecord.fromJS(data));
 });
