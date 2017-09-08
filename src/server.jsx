@@ -1,41 +1,144 @@
+import 'source-map-support/register';
 import express from 'express';
 import path from 'path';
 import ReactDOMServer from 'react-dom/server';
 import React from 'react';
-import config from '../config';
 import { StaticRouter } from 'react-router-dom';
-import App from './components/App'
-import { get } from '../addImport';
-import asyncPrerender from './util/asyncPrerender';
-import AsyncPrerenderProvider from './util/AsyncPrerenderProvider';
-// import asyncBootstrapper from 'react-async-bootstrapper'
+import { createStore, applyMiddleware } from 'redux';
+import { Provider } from 'react-redux';
+import { Map } from 'immutable';
+import http from 'http';
+import socketio from 'socket.io';
 
-const app = express();
+import mongodb from 'mongodb';
 
-// app.use('/assets', express.static(
-//   path.join(__dirname, '../dist')
-// ));
+import Transform from './data/Transform';
+import config from '../config';
+import reducers from './reducers';
+import socketMiddleware from './util/serverSocketMiddleware';
+import ListenerMiddleware from './util/listenerMiddleware';
 
-app.use(async (req, res) => {
-  const context = {};
-  const registry = {};
-  const app = (
-    <AsyncPrerenderProvider registry={registry}>
-      <StaticRouter location={req.url} context={context}>
-        <App />
-      </StaticRouter>
-    </AsyncPrerenderProvider>
-  );
-  await asyncPrerender(app);
-  const html = ReactDOMServer.renderToString(app);
-  res.send(
-`<html>
-  <body>
-    <div id="react-root">${html}</div>
-    <script src="http://localhost:9000/assets/app.js"></script>
-  </body>
-</html>`
-  );
-});
+(async function init() {
 
-app.listen(process.env.PORT || config.port);
+  let initState = {
+    streams: { twitchShouldHaveSound: new Map() },
+    transforms: new Map(),
+  };
+
+  const app = express();
+  const server = http.Server(app);
+  const io = socketio(server);
+  const listenerMiddleware = new ListenerMiddleware();
+
+  const db = await mongodb.MongoClient.connect('mongodb://localhost:27017/commentary');
+  const collection = db.collection('streams');
+
+  const docs = await collection.find().toArray();
+
+  docs.forEach(doc => {
+    if (!doc.name) return;
+    if (doc.transform) {
+      initState.transforms = initState.transforms.set(doc.name, new Transform(doc.transform));
+    }
+    if (doc.allowSound) {
+      initState.streams.twitchShouldHaveSound = initState.streams.twitchShouldHaveSound.set(doc.name, doc.allowSound);
+    }
+  });
+
+  await collection.createIndex({ name: 1 }, { unique: true });
+  listenerMiddleware.addListener(async action => {
+    switch (action.type) {
+      case 'set-transform':
+        await collection.updateOne(
+          { name: action.twitch },
+          { $set: { transform: action.transform.toJS() } },
+          { upsert: true },
+        );
+        break;
+      case 'allow-sound-stream':
+        await collection.updateOne(
+          { name: action.twitch },
+          { $set: { allowSound: true } },
+          { upsert: true },
+        );
+        break;
+      case 'disallow-sound-stream':
+        await collection.updateOne(
+          { name: action.twitch },
+          { $set: { allowSound: false } },
+          { upsert: true },
+        );
+        break;
+    }
+  });
+
+  console.log(initState.streams.twitchShouldHaveSound.toJS());
+
+  const store = createStore(reducers, initState, applyMiddleware(socketMiddleware(io), listenerMiddleware.middleware));
+
+  app.use('/assets', express.static(
+    path.join(__dirname, '../assets')
+  ));
+
+  app.get('/edit', (req, res) => {
+    const { streams: { list, positionToIndex, twitchToIndex, twitchShouldHaveSound, soundStream }, transforms, race } = store.getState();
+    const initialState = {
+      streams: {
+        list: list.toJS(),
+        positionToIndex: positionToIndex.toJS(),
+        twitchToIndex: twitchToIndex.toJS(),
+        twitchShouldHaveSound: twitchShouldHaveSound.toJS(),
+        soundStream,
+      },
+      transforms: transforms.toJS(),
+      race,
+    };
+    res.send(
+  `<html>
+    <head>
+      <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <script src= "http://player.twitch.tv/js/embed/v1.js"></script>
+    </head>
+    <body>
+      <div id="react-root"></div>
+      <script>window.INITIAL_STATE = ${JSON.stringify(initialState)}</script>
+      <script src="http://localhost:9000/assets/edit.js"></script>
+    </body>
+  </html>`
+    );
+  });
+
+  app.get('/', (req, res) => {
+    const { streams: { list, positionToIndex, twitchToIndex, twitchShouldHaveSound, soundStream }, transforms, race } = store.getState();
+    const initialState = {
+      streams: {
+        list: list.toJS(),
+        positionToIndex: positionToIndex.toJS(),
+        twitchToIndex: twitchToIndex.toJS(),
+        twitchShouldHaveSound: twitchShouldHaveSound.toJS(),
+        soundStream,
+      },
+      transforms: transforms.toJS(),
+      race,
+    };
+    res.send(
+  `<html>
+    <head>
+      <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <script src= "http://player.twitch.tv/js/embed/v1.js"></script>
+    </head>
+    <body>
+      <div id="react-root"></div>
+      <script>window.INITIAL_STATE = ${JSON.stringify(initialState)}</script>
+      <script src="http://localhost:9000/assets/view.js"></script>
+    </body>
+  </html>`
+    );
+  });
+
+  server.listen(process.env.PORT || config.port);
+})()
+
+

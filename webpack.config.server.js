@@ -19,6 +19,11 @@ module.exports = {
     path: path.resolve(__dirname, 'build'),
   },
   plugins: [
+    new webpack.BannerPlugin({
+      banner: `require('source-map-support').install();`,
+      raw: true,
+      entryOnly: false,
+    }),
     // new webpack.ProvidePlugin({
     //   addImport: [path.resolve(__dirname, 'addImport'), 'add'],
     // }),
@@ -46,4 +51,7 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.jsx'],
   },
+  node: {
+    __dirname: false,
+  }
 };

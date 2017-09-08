@@ -1,0 +1,154 @@
+.stream {
+  display: flex;
+  position: absolute;
+  height: 50%;
+  width: 50%;
+  transition: 0.5s ease-in-out;
+
+  .flipper {
+    transform: perspective(150vh);
+    position: relative;
+    height: 100%;
+    width: 100%;
+
+    &.appearing {
+      transform: rotateY(-90deg);
+    }
+
+    &.fading {
+      transition: transform 0.5s ease-in;
+      z-index: 20;
+      transform: rotateY(90deg);
+    }
+
+    &.alive {
+      transition: transform 0.5s ease-out;
+    }
+  }
+
+  .padder {
+    height: 85%;
+    width: 85%;
+    top: 10%;
+    left: 7.5%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .title {
+    color: white;
+    font-family: Chiaro;
+    position: absolute;
+    left: 10%;
+    font-size: 2.5vh;
+    top: 1%;
+
+    i {
+      margin: 0 16px;
+    }
+  }
+
+  .transformer {
+    height: 100%;
+    width: 100%;
+
+    &.hidden {
+      opacity: 0;
+    }
+  }
+
+  iframe {
+    height: 150%;
+    width: 100%;
+    transform: scale(1.3333) translateY(-25%);
+    transform-origin: right top;
+  }
+
+  .overlay {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
+    z-index: 1;
+    flex-direction: column;
+    align-items: flex-end;
+    button {
+      margin: 10px;
+    }
+  }
+
+  .row {
+    display: flex;
+  }
+
+  &:hover .overlay {
+    display: flex;
+  }
+  .move {
+    color: white;
+    margin-top: 20px;
+    > div {
+      position: relative;
+      height: 30%;
+      width: 100%;
+      div {
+        position: absolute;
+        height: 30%;
+        width: 40%;
+      }
+      button {
+        height: 80%;
+        width: 80%;
+        margin: 20%;
+        display: block;
+      }
+    }
+  }
+  &.edit {
+    color: white;
+    height: 100%;
+    width: 100%;
+    transform: translate(0, 0);
+    z-index: 100;
+  }
+
+  .loadingOverlay {
+    height: 100%;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    opacity: 1;
+    transition: 0.2s ease-in-out;
+
+    &.hidden {
+      pointer-events: none;
+      opacity: 0;
+    }
+  }
+}
+
+:global .loading {
+  left: -50%;
+  bottom: 0;
+  transition: none;
+}
+
+:global .tl {
+  transform: translate(0, 0);
+}
+
+:global .tr {
+  transform: translate(100%, 0);
+}
+
+:global .bl {
+  transform: translate(0, 100%);
+}
+
+:global .br {
+  transform: translate(100%, 100%);
+}

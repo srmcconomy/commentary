@@ -115,5 +115,8 @@ gulp.task('run', ['watch:client', 'watch:server'], cb => {
   nodemon({
     script: 'build/app.js',
     watch: 'build',
+    execMap: {
+      js: 'node --trace-warnings',
+    },
   })
 })

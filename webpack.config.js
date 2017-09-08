@@ -6,9 +6,13 @@ const config = require('./config');
 module.exports = {
   context: __dirname,
   entry: {
-    app: [
+    edit: [
       'react-hot-loader/patch',
-      './src/client.jsx',
+      './src/clientEdit.jsx',
+    ],
+    view: [
+      'react-hot-loader/patch',
+      './src/clientView.jsx',
     ],
   },
   devtool: 'source-map',
@@ -19,7 +23,7 @@ module.exports = {
     publicPath: `http://localhost:${config.webpack.devServerPort}/${config.webpack.publicPath}`,
   },
   devServer: {
-    contentBase: path.resolve(__dirname, 'dist'),
+    contentBase: path.resolve(__dirname, 'assets'),
     publicPath: `http://localhost:${config.webpack.devServerPort}/${config.webpack.publicPath}`,
     port: config.webpack.devServerPort,
     hot: true,
@@ -39,9 +43,9 @@ module.exports = {
       {
         test: /\.scss$/,
         use: [
-          'style-loader',
-          'css-loader',
-          'sass-loader',
+          { loader: 'style-loader', options: { sourceMap: true } },
+          { loader: 'css-loader', options: { modules: true, sourceMap: true } },
+          { loader: 'sass-loader', options: { sourceMap: true } },
         ],
       }, {
         test: /\.jsx?$/,
