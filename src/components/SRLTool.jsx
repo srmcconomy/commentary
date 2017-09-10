@@ -48,6 +48,7 @@ class SRLTool extends Component {
       const json = await response.json();
       this.setState({
         streams: Object.keys(json.entrants)
+          .filter(key => json.entrants[key].statetext === 'Ready' || json.entrants[key].statetext === 'Entered')
           .map(key => json.entrants[key].twitch)
           .sort((a, b) => a.toLowerCase() < b.toLowerCase() ? -1 : 1),
         loading: false,
@@ -76,7 +77,7 @@ class SRLTool extends Component {
           <button disabled={this.state.loading} onClick={this.onClick}>go</button>
         </div>
         <div className={styles.streams}>
-          { this.state.streams && this.state.streams.map(player => (
+          { this.state.streams && this.state.streams.filter(player => player).map(player => (
             <div key={player}>
               <button onClick={this.onPlayerClick(player)}>{player}</button>
               {this.props.twitchShouldHaveSound.get(player) ?

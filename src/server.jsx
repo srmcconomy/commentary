@@ -80,6 +80,8 @@ import ListenerMiddleware from './util/listenerMiddleware';
     path.join(__dirname, '../assets')
   ));
 
+  const sourcePath = process.env.NODE_ENV === 'production' ? '/dist/' : 'http://localhost:9000/assets/';
+
   app.get('/edit', (req, res) => {
     const { streams: { list, positionToIndex, twitchToIndex, twitchShouldHaveSound, soundStream }, transforms, race } = store.getState();
     const initialState = {
@@ -103,7 +105,7 @@ import ListenerMiddleware from './util/listenerMiddleware';
     <body>
       <div id="react-root"></div>
       <script>window.INITIAL_STATE = ${JSON.stringify(initialState)}</script>
-      <script src="http://localhost:9000/assets/edit.js"></script>
+      <script src="${sourcePath}edit.js"></script>
     </body>
   </html>`
     );
@@ -132,7 +134,7 @@ import ListenerMiddleware from './util/listenerMiddleware';
     <body>
       <div id="react-root"></div>
       <script>window.INITIAL_STATE = ${JSON.stringify(initialState)}</script>
-      <script src="http://localhost:9000/assets/view.js"></script>
+      <script src="${sourcePath}/view.js"></script>
     </body>
   </html>`
     );
