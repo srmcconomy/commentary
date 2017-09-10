@@ -10,6 +10,9 @@ export default function (state = new Map(), action) {
       }
       return state;
     case 'set-transform':
+      if (!action.transform.set) {
+        action.transform = new Transform(action.transform);
+      }
       return state.set(action.twitch, action.transform);
     default:
       return state;
