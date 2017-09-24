@@ -89,23 +89,27 @@ class Stream extends Component {
   }
 
   initTwitch() {
-    this.setState({ loading: false });
-    if (this.player) this.player.destroy();
-    this.player = new Twitch.Player(
-      this.props.stream.twitch,
-      { channel: this.props.stream.twitch },
-    );
-    this.player.setVolume(this.props.stream.position !== 'loading' && !this.props.muted ? 1 : 0);
-    this.player.setMuted(false);
-    // this.player.addEventListener(Twitch.Player.READY, () => console.log('ready'));
-    // this.player.addEventListener(Twitch.Player.ONLINE, () => console.log('online'));
-    this.player.addEventListener(Twitch.Player.PLAY, () => {
-      if (this.props.view) this.props.streamDoneLoading(this.props.stream.twitch);
-      this.setState({ hidden: false });
-    });
-    this.player.addEventListener(Twitch.Player.OFFLINE, () => this.setState({ hidden: true }));
-    this.player.addEventListener(Twitch.Player.PAUSE, () => this.setState({ hidden: true }));
-    this.player.addEventListener(Twitch.Player.ENDED, () => this.setState({ hidden: true }));
+    try {
+      this.setState({ loading: false });
+      if (this.player) this.player.destroy();
+      this.player = new Twitch.Player(
+        this.props.stream.twitch,
+        { channel: this.props.stream.twitch },
+      );
+      this.player.setVolume(this.props.stream.position !== 'loading' && !this.props.muted ? 1 : 0);
+      this.player.setMuted(false);
+      // this.player.addEventListener(Twitch.Player.READY, () => console.log('ready'));
+      // this.player.addEventListener(Twitch.Player.ONLINE, () => console.log('online'));
+      this.player.addEventListener(Twitch.Player.PLAY, () => {
+        if (this.props.view) this.props.streamDoneLoading(this.props.stream.twitch);
+        this.setState({ hidden: false });
+      });
+      this.player.addEventListener(Twitch.Player.OFFLINE, () => this.setState({ hidden: true }));
+      this.player.addEventListener(Twitch.Player.PAUSE, () => this.setState({ hidden: true }));
+      this.player.addEventListener(Twitch.Player.ENDED, () => this.setState({ hidden: true }));
+    } catch (err) {
+
+    }
   }
 
   loadingOnClick = func => async () => {
